@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iSTUDY by ZxTORUT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f7ff;
+            --border-color: #000000;
+            --science-color: #4ade80; 
+            --commerce-color: #fbbf24;
+            --primary-blue: #2563eb;
+            --border-width: 3px;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            padding-top: 80px; /* Space for Fixed Header */
+        }
+
+        /* --- FIXED NAVBAR --- */
+        nav {
+            background: #ffffff;
+            border-bottom: var(--border-width) solid var(--border-color);
+            padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%;
+            z-index: 1000;
+            height: 80px;
+        }
+
+        /* Logo Container */
+        .logo-container {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Logo Image Placeholder */
+        .logo-img {
+            height: 40px; width: auto;
+            border: none; 
+            display: block;
+        }
+
+        .logo-text {
+            font-size: 1.5rem; font-weight: 700;
+            color: var(--border-color); text-transform: uppercase; letter-spacing: 1px;
+        }
+        .logo-text span { color: var(--primary-blue); }
+
+        .hamburger {
+            display: flex; flex-direction: column; gap: 6px; cursor: pointer;
+            z-index: 1002; width: 30px;
+        }
+        .hamburger span {
+            width: 100%; height: 4px; background-color: var(--border-color);
+            border-radius: 4px; transition: 0.3s;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(8px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(8px, -6px); }
+
+        /* Menu Box */
+        .menu-box {
+            position: fixed; top: 90px; right: 20px; width: 200px;
+            background: #ffffff; border: var(--border-width) solid var(--border-color);
+            border-radius: 12px; display: flex; flex-direction: column;
+            opacity: 0; transform: scale(0.8) translateY(-20px);
+            pointer-events: none; transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 1001;
+            transform-origin: top right;
+        }
+        .menu-box.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
+        .menu-box a {
+            text-decoration: none; color: var(--border-color); font-weight: 600;
+            font-size: 1.1rem; padding: 15px 20px; border-bottom: 2px solid #f0f0f0;
+        }
+        .menu-box a:last-child { border-bottom: none; }
+
+        /* --- BANNER ALERT --- */
+        .banner-alert {
+            background-color: #fffbeb;
+            border-bottom: var(--border-width) solid var(--border-color);
+            padding: 15px;
+            text-align: center;
+            color: #b45309;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            animation: fadeIn 0.5s ease-out;
+            margin-bottom: 10px; /* Space below banner */
+        }
+        .banner-alert span { background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .banner-alert:hover { background-color: #fef3c7; }
+
+        /* --- MAIN CONTENT --- */
+        .container {
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; /* Better vertical flow */
+            align-items: center;
+            padding: 20px 20px 60px 20px; /* Added bottom padding */
+            gap: 30px; /* Space between cards */
+        }
+
+        /* Responsive Card Styling */
+        .card {
+            background: #ffffff; 
+            border: var(--border-width) solid var(--border-color);
+            border-radius: 16px; 
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 360px; /* Limits width on big screens */
+            text-align: center; 
+            transition: transform 0.3s ease;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1); /* Slight shadow for depth */
+        }
+        .card:hover { transform: translateY(-5px); }
+
+        .tag {
+            display: inline-block; padding: 5px 15px;
+            border: 2px solid var(--border-color); border-radius: 50px;
+            font-weight: 700; font-size: 0.9rem; margin-bottom: 1rem; background: white;
+        }
+        .commerce-card .tag { background-color: var(--commerce-color); }
+        .science-card .tag { background-color: var(--science-color); }
+
+        .card h2 { font-size: 2rem; margin-bottom: 10px; }
+        .card p { font-size: 1.1rem; color: #555; margin-bottom: 25px; line-height: 1.5; }
+
+        .btn {
+            display: block; width: 100%; padding: 14px;
+            border: 2px solid var(--border-color); background-color: var(--bg-color);
+            color: var(--border-color); font-weight: 700; font-size: 1.2rem;
+            text-decoration: none; border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { background-color: var(--border-color); color: white; }
+
+        /* --- BOTTOM SHEET --- */
+        .sheet-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .sheet-overlay.active { opacity: 1; pointer-events: all; }
+
+        .bottom-sheet {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 25px 20px; z-index: 2001;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-top: var(--border-width) solid var(--border-color);
+        }
+        .bottom-sheet.active { transform: translateY(0); }
+        .sheet-handle { width: 50px; height: 5px; background: #ddd; border-radius: 10px; margin: 0 auto 20px auto; }
+        .year-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 500px; margin: 0 auto; }
+        .year-btn {
+            padding: 15px; background: white; border: 2px solid var(--border-color);
+            border-radius: 12px; font-size: 1.2rem; font-weight: 700;
+            cursor: pointer; text-align: center;
+        }
+        .year-btn.latest { background-color: #f0f7ff; border-color: var(--primary-blue); color: var(--primary-blue); }
+
+        footer { text-align: center; padding: 2rem; font-weight: 600; opacity: 0.7; font-size: 0.9rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Desktop Adjustment */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row; 
+                justify-content: center; 
+                align-items: flex-start;
+                padding-top: 50px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo" class="logo-img">
+            <div class="logo-text">i<span>EDUY</span></div>
+        </div>
+
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="menu-box" id="menuBox">
+            <a href="#">Home</a>
+            <a href="12th-commerce-2026-21set.html">21 SET</a>
+            <a href="about_zx-torut.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="Report-bug.html">Bug</a>
+        </div>
+    </nav>
+
+    <a href="21-set-commerce-2026.html" class="banner-alert">
+        <span>NEW</span> 21 Set Papers (2026) Available Now! 🔥
+    </a>
+
+    <div class="container">
+        <div class="card commerce-card">
+            <span class="tag">COMMERCE</span>
+            <h2>12th Grade</h2>
+            <p>5 Years Question Papers<br>(Accounts, Eco, OCM)</p>
+            <button class="btn" onclick="openSheet('commerce')">View Papers -></button>
+        </div>
+
+        <div class="card science-card">
+            <span class="tag">SCIENCE</span>
+            <h2>12th Grade</h2>
+            <p>5 Years Question Papers<br>(Physics, Chem, Maths)</p>
+            <button class="btn" onclick="openSheet('science')">View Papers -></button>
+        </div>
+    </div>
+
+    <footer>Designed by ZxTORUT &copy; 2025</footer>
+
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+    <div class="bottom-sheet" id="yearSheet">
+        <div class="sheet-handle"></div>
+        <h3 style="text-align: center; margin-bottom: 20px;">Select Year</h3>
+        <div class="year-grid">
+            <div class="year-btn latest" onclick="goToPaper(2025)">2025</div>
+            <div class="year-btn" onclick="goToPaper(2024)">2024</div>
+            <div class="year-btn" onclick="goToPaper(2023)">2023</div>
+            <div class="year-btn" onclick="goToPaper(2022)">2022</div>
+            <div class="year-btn" style="grid-column: span 2;" onclick="goToPaper(2021)">2021</div>
+        </div>
+    </div>
+
+    <script>
+        let selectedStream = '';
+
+        function toggleMenu() {
+            document.querySelector('.hamburger').classList.toggle('active');
+            document.querySelector('.menu-box').classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.querySelector('.menu-box');
+            const hamburger = document.querySelector('.hamburger');
+            if (!menu.contains(e.target) && !hamburger.contains(e.target) && menu.classList.contains('open')) {
+                menu.classList.remove('open');
+                hamburger.classList.remove('active');
+            }
+        });
+
+        function openSheet(stream) {
+            selectedStream = stream;
+            document.getElementById('sheetOverlay').classList.add('active');
+            document.getElementById('yearSheet').classList.add('active');
+        }
+
+        function closeSheet() {
+            document.getElementById('sheetOverlay').classList.remove('active');
+            document.getElementById('yearSheet').classList.remove('active');
+        }
+
+        function goToPaper(year) {
+            setTimeout(() => {
+                window.location.href = `12th-${selectedStream}-${year}.html`;
+            }, 200);
+        }
+    </script>
+
+</body>
+</html>

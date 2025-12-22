@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | ZxTORUT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f0f7ff;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --primary-blue: #2563eb;
+            --whatsapp-color: #25D366;
+            --email-color: #ea4335;
+            --border-width: 3px;
+            --shadow: 4px 4px 0px #000000;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            padding-bottom: 50px;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: white;
+            padding: 20px;
+            border-bottom: var(--border-width) solid #000;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .back-btn {
+            text-decoration: none; font-size: 1.2rem;
+            color: #000; font-weight: 700;
+        }
+        .title { font-size: 1.5rem; font-weight: 700; color: var(--text-color); }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* --- CONTACT CARDS --- */
+        .contact-card {
+            background: var(--card-bg);
+            border: var(--border-width) solid #000;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.1s;
+        }
+        .contact-card:active { transform: scale(0.98); }
+
+        .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        
+        .contact-label {
+            font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;
+        }
+
+        .contact-link {
+            display: block;
+            text-decoration: none;
+            color: #333;
+            font-size: 1rem;
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 2px solid #ddd;
+            word-break: break-all;
+        }
+        .contact-link:hover { border-color: #000; }
+
+        /* --- REQUEST BUTTON --- */
+        .request-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .request-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: var(--border-width) solid #000;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: var(--shadow);
+            transition: transform 0.1s;
+            width: 100%;
+        }
+        .request-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .note {
+            margin-top: 15px; font-size: 0.9rem; color: #666;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">&lt; Home</a>
+        <div class="title">Contact Support</div>
+    </div>
+
+    <div class="container">
+
+        <div class="contact-card">
+            <div class="icon">📧</div>
+            <div class="contact-label">Email Support</div>
+            <a href="mailto:zxtorut@gmail.com" class="contact-link">zxtorut@gmail.com</a>
+            <a href="mailto:zxtorutdeveloper@gmail.com" class="contact-link">zxtorutdeveloper@gmail.com</a>
+        </div>
+
+        <div class="contact-card">
+            <div class="icon" style="color: var(--whatsapp-color);">💬</div>
+            <div class="contact-label">WhatsApp Chat</div>
+            <p style="margin-bottom: 10px; color: #555;">Get instant help</p>
+            <a href="https://wa.me/919137174928" class="contact-link" style="background:#eefcf2; border-color:#25D366;">
+                +91 91371 74928
+            </a>
+        </div>
+
+        <div class="request-section">
+            <a href="request.html" class="request-btn">Request More Books 📚</a>
+            <div class="note">Can't find what you're looking for? Let us know!</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
