@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>21 Set (2026) | iSTUDY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f0f7ff;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --accent-color: #2563eb; /* Blue */
+            --bk-color: #ea580c;     /* Orange for BK */
+            --ocm-color: #059669;    /* Green for OCM */
+            --eco-color: #db2777;    /* Pink for Eco */
+            --sp-color: #7c3aed;     /* Purple for SP */
+            --eng-color: #0891b2;    /* Cyan for English/Maths */
+            --border-width: 3px;
+            --shadow: 4px 4px 0px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Fredoka', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: white;
+            padding: 20px;
+            border-bottom: var(--border-width) solid #000;
+            display: flex; align-items: center; gap: 15px;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .back-btn {
+            text-decoration: none; font-size: 1.5rem;
+            color: #000; font-weight: 700;
+        }
+        .title { font-size: 1.5rem; font-weight: 700; color: var(--text-color); }
+
+        /* --- GRID LAYOUT --- */
+        .container {
+            padding: 25px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* --- CARDS --- */
+        .subject-card {
+            background: var(--card-bg);
+            border: var(--border-width) solid #000;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            transition: transform 0.1s;
+            text-decoration: none;
+            color: #000;
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+        .subject-card:active { transform: scale(0.96); box-shadow: 2px 2px 0px rgba(0,0,0,0.15); }
+
+        .card-badge {
+            font-size: 0.8rem; font-weight: 700;
+            padding: 5px 10px; border-radius: 20px;
+            width: fit-content; margin-bottom: 10px;
+            border: 2px solid #000; color: #fff;
+        }
+        .sub-name { font-size: 1.3rem; font-weight: 700; line-height: 1.2; }
+        .sub-year { font-size: 0.9rem; color: #555; margin-top: 5px; font-weight: 600; }
+
+        .icon-overlay {
+            position: absolute; bottom: -10px; right: -10px;
+            font-size: 5rem; opacity: 0.1; transform: rotate(-15deg);
+        }
+
+        /* --- COLORS --- */
+        .card-bk .card-badge { background-color: var(--bk-color); }
+        .card-ocm .card-badge { background-color: var(--ocm-color); }
+        .card-eco .card-badge { background-color: var(--eco-color); }
+        .card-sp .card-badge { background-color: var(--sp-color); }
+        .card-eng .card-badge { background-color: var(--eng-color); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">&lt;</a>
+        <div class="title">21 Set Papers (2026)</div>
+    </div>
+
+    <div class="container">
+
+        <a href="21-set-commerce-2026-bk.html" class="subject-card card-bk">
+            <div>
+                <div class="card-badge">Accounts</div>
+                <div class="sub-name">Book Keeping</div>
+                <div class="sub-year">21 Set • 2026</div>
+            </div>
+            <div class="icon-overlay">📒</div>
+        </a>
+
+        <a href="21-set-commerce-2026-ocm.html" class="subject-card card-ocm">
+            <div>
+                <div class="card-badge">Mgmt</div>
+                <div class="sub-name">O.C.M.</div>
+                <div class="sub-year">21 Set • 2026</div>
+            </div>
+            <div class="icon-overlay">📊</div>
+        </a>
+
+        <a href="21-set-commerce-2026-eco.html" class="subject-card card-eco">
+            <div>
+                <div class="card-badge">Finance</div>
+                <div class="sub-name">Economics</div>
+                <div class="sub-year">21 Set • 2026</div>
+            </div>
+            <div class="icon-overlay">💰</div>
+        </a>
+
+        <a href="21-set-commerce-2026-sp.html" class="subject-card card-sp">
+            <div>
+                <div class="card-badge">Corp</div>
+                <div class="sub-name">S.P.</div>
+                <div class="sub-year">21 Set • 2026</div>
+            </div>
+            <div class="icon-overlay">✒️</div>
+        </a>
+
+        <a href="21-set-commerce-2026-eng.html" class="subject-card card-eng">
+            <div>
+                <div class="card-badge">Lang</div>
+                <div class="sub-name">English</div>
+                <div class="sub-year">21 Set • 2026</div>
+            </div>
+            <div class="icon-overlay">📖</div>
+        </a>
+
+    </div>
+
+</body>
+</html>

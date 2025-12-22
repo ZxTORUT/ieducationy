@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BK 21 Set Paper | iSTUDY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
+
+    <style>
+        :root {
+            --bg-color: #f0f7ff;
+            --border-color: #000000;
+            --bk-color: #ea580c; /* Orange for BK */
+            --primary-blue: #2563eb;
+            --border-width: 3px;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            padding-bottom: 80px; 
+        }
+
+        /* --- HEADER --- */
+        .header-area {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: var(--border-width) solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .back-btn { text-decoration: none; font-weight: 700; color: var(--border-color); font-size: 1.1rem; }
+        .paper-title { font-size: 1.2rem; font-weight: 700; }
+
+        /* --- PDF CONTAINER --- */
+        #pdf-render-container {
+            width: 100%;
+            background-color: #525659;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            min-height: 60vh;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            display: block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background-color: white;
+        }
+
+        /* --- ZOOM CONTROLS --- */
+        .zoom-controls {
+            position: fixed;
+            bottom: 100px; right: 20px;
+            display: flex; flex-direction: column; gap: 10px;
+            z-index: 99;
+        }
+
+        .zoom-btn {
+            width: 50px; height: 50px;
+            background: white;
+            border: var(--border-width) solid var(--border-color);
+            border-radius: 50%;
+            font-size: 1.5rem; font-weight: 700;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+        .zoom-btn:active { transform: scale(0.9); }
+
+        /* --- LOADING & OVERLAYS --- */
+        .rendering-msg { color: white; margin-top: 50px; font-size: 1.2rem; text-align: center; }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #ddd;
+            border-top: 4px solid var(--primary-blue); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 15px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .action-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; padding: 15px 20px;
+            border-top: var(--border-width) solid var(--border-color);
+            display: flex; gap: 15px; z-index: 100;
+        }
+        .action-btn {
+            flex: 1; padding: 12px; border: var(--border-width) solid var(--border-color);
+            border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer;
+            text-align: center; box-shadow: 2px 2px 0px var(--border-color);
+        }
+        .btn-share { background-color: white; color: var(--border-color); }
+        .btn-download { background-color: var(--bk-color); color: white; border-color: #000; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: white; width: 90%; max-width: 350px; padding: 25px;
+            border-radius: 16px; border: var(--border-width) solid var(--border-color);
+            text-align: center;
+        }
+        .link-box {
+            background: #f3f4f6; padding: 10px; margin: 15px 0;
+            border: 2px solid #ddd; border-radius: 8px; font-family: monospace; 
+            word-break: break-all; font-size: 0.9rem;
+        }
+
+        /* --- LOADER --- */
+        .loader-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: white; z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: transform 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        .loader-container.hide { transform: translateY(-100%); }
+        .book-emoji { font-size: 5rem; animation: bounceBook 1s infinite alternate; }
+        @keyframes bounceBook { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="loader-container" id="pageLoader">
+        <div class="book-emoji">📒</div>
+        <h3>Loading 21 Set...</h3>
+    </div>
+
+    <div class="header-area">
+        <a href="21-set-commerce-2026.html" class="back-btn">&lt; Back</a>
+        <div class="paper-title">BK 21 Set (2026)</div>
+        <div style="width: 40px;"></div>
+    </div>
+
+    <div id="pdf-render-container">
+        <div class="rendering-msg" id="loadingText">
+            <div class="spinner"></div>
+            Loading PDF...
+        </div>
+    </div>
+
+    <div class="zoom-controls">
+        <div class="zoom-btn" onclick="zoomDoc('in')">+</div>
+        <div class="zoom-btn" onclick="zoomDoc('out')">-</div>
+    </div>
+
+    <div class="action-bar">
+        <button class="action-btn btn-share" onclick="openShare()">Share 🔗</button>
+        <button class="action-btn btn-download" onclick="startDownload()">Download ⬇</button>
+    </div>
+
+    <div class="overlay" id="shareOverlay" onclick="closeShare(event)">
+        <div class="modal-box">
+            <h3>Share Link</h3>
+            <div class="link-box" id="linkText">Loading...</div>
+            <button class="action-btn" style="background:#2563eb; color:white;" onclick="copyLink()">Copy Link</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="downloadOverlay">
+        <div class="modal-box">
+            <div class="spinner"></div>
+            <h3>Downloading...</h3>
+            <p>Your file is being saved.</p>
+        </div>
+    </div>
+
+    <a href="21set-commerce-bk-2026.pdf" download="21set-commerce-bk-2026.pdf" id="realDownloadLink" style="display:none"></a>
+
+    <script>
+        const url = '21set-commerce-bk-2026.pdf'; // BK 21 Set PDF
+        let pdfDoc = null;
+        let scale = 1.0; 
+        const container = document.getElementById('pdf-render-container');
+        const loadingText = document.getElementById('loadingText');
+
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            pdfDoc = pdf;
+            loadingText.style.display = 'none';
+            document.getElementById('pageLoader').classList.add('hide'); 
+
+            // --- SMART FIT CALCULATION ---
+            pdf.getPage(1).then(page => {
+                const viewport = page.getViewport({ scale: 1.0 });
+                const screenWidth = container.clientWidth;
+                const desiredWidth = screenWidth * 0.95; 
+                scale = desiredWidth / viewport.width;
+
+                renderAllPages();
+            });
+
+        }).catch(error => {
+            console.error('Error:', error);
+            loadingText.innerHTML = "Error loading PDF.<br>Check filename '21set-commerce-bk-2026.pdf'";
+        });
+
+        function renderAllPages() {
+            container.innerHTML = ''; 
+            
+            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+                pdfDoc.getPage(pageNum).then(page => {
+                    
+                    // HD RENDERING
+                    const outputScale = window.devicePixelRatio || 1;
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    canvas.width = Math.floor(viewport.width * outputScale);
+                    canvas.height = Math.floor(viewport.height * outputScale);
+
+                    canvas.style.width = Math.floor(viewport.width) + "px";
+                    canvas.style.height = Math.floor(viewport.height) + "px";
+
+                    const transform = outputScale !== 1
+                      ? [outputScale, 0, 0, outputScale, 0, 0]
+                      : null;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        transform: transform,
+                        viewport: viewport
+                    };
+                    
+                    page.render(renderContext);
+                    container.appendChild(canvas);
+                });
+            }
+        }
+
+        function zoomDoc(direction) {
+            const step = 0.2;
+            if (direction === 'in') scale += step;
+            else scale = Math.max(0.2, scale - step); 
+            renderAllPages();
+        }
+
+        function openShare() {
+            document.getElementById('linkText').innerText = window.location.href;
+            document.getElementById('shareOverlay').classList.add('active');
+        }
+        function closeShare(e) {
+            if(e.target.id === 'shareOverlay') document.getElementById('shareOverlay').classList.remove('active');
+        }
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => alert("Link Copied!"));
+        }
+        function startDownload() {
+            document.getElementById('downloadOverlay').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('realDownloadLink').click();
+                setTimeout(() => document.getElementById('downloadOverlay').classList.remove('active'), 1000);
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>
