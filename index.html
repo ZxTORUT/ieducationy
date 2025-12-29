@@ -26,6 +26,7 @@
             min-height: 100vh;
             display: flex; flex-direction: column;
             padding-top: 80px; /* Space for Fixed Header */
+            overflow-x: hidden;
         }
 
         /* --- FIXED NAVBAR --- */
@@ -100,8 +101,7 @@
             margin-bottom: 10px; /* Space below banner */
         }
         .banner-alert span { background: #ea580c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
-        .banner-alert:hover { background-color: #fef3c7; }
-
+        
         /* --- MAIN CONTENT --- */
         .container {
             flex: 1; 
@@ -170,8 +170,63 @@
         }
         .year-btn.latest { background-color: #f0f7ff; border-color: var(--primary-blue); color: var(--primary-blue); }
 
-        footer { text-align: center; padding: 2rem; font-weight: 600; opacity: 0.7; font-size: 0.9rem; }
+        /* --- ENHANCED FOOTER --- */
+        footer {
+            background: #111827; /* Dark BG */
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 4px solid var(--border-color);
+            margin-top: auto;
+        }
+        .subscribe-box { max-width: 400px; margin: 0 auto 30px auto; }
+        .subscribe-box h3 { margin-bottom: 15px; font-size: 1.4rem; }
+        .sub-form { display: flex; gap: 10px; }
+        .sub-input { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 1rem; outline: none; }
+        .sub-btn { padding: 12px 20px; background: var(--primary-blue); color: white; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; }
+        .footer-brand { opacity: 0.8; font-size: 1rem; font-weight: 600; }
+        .footer-brand span { color: #ef4444; font-size: 1.2rem; } /* Heart Color */
+        .footer-brand b { color: #fbbf24; }
+
+        /* --- TOUCH RIPPLE EFFECT --- */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            transform: scale(0); animation: ripple-anim 0.6s linear;
+            background: rgba(0, 0, 0, 0.2); pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+        /* --- FULL SCREEN NOTIFICATION POPUP --- */
+        .notif-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .notif-modal.show { opacity: 1; pointer-events: all; }
         
+        .notif-content {
+            background: white; border: 3px solid #000; border-radius: 20px;
+            padding: 30px; max-width: 400px;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+        }
+        .notif-icon { font-size: 4rem; margin-bottom: 15px; }
+        .notif-title { font-size: 1.8rem; margin-bottom: 10px; }
+        .notif-desc { color: #555; margin-bottom: 25px; line-height: 1.5; }
+        
+        .notif-btns { display: flex; flex-direction: column; gap: 15px; }
+        .btn-allow {
+            background: var(--primary-blue); color: white; border: 2px solid #000;
+            padding: 15px; font-weight: 700; border-radius: 10px; cursor: pointer; font-size: 1.1rem;
+        }
+        .btn-deny {
+            background: transparent; color: #555; border: none;
+            font-weight: 600; cursor: pointer; text-decoration: underline;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Desktop Adjustment */
@@ -183,10 +238,21 @@
                 padding-top: 50px;
             }
         }
-
     </style>
 </head>
 <body>
+
+    <div class="notif-modal" id="notifModal">
+        <div class="notif-content">
+            <div class="notif-icon">🔔</div>
+            <h2 class="notif-title">Enable Updates</h2>
+            <p class="notif-desc">We need to send you notifications for new question papers and updates. Please allow access to continue.</p>
+            <div class="notif-btns">
+                <button class="btn-allow" onclick="allowNotifications()">Allow Notifications</button>
+                <button class="btn-deny" onclick="denyNotifications()">Don't Allow</button>
+            </div>
+        </div>
+    </div>
 
     <nav>
         <div class="logo-container">
@@ -227,7 +293,18 @@
         </div>
     </div>
 
-    <footer>Designed by ZxTORUT &copy; 2025</footer>
+    <footer>
+        <div class="subscribe-box">
+            <h3>Subscribe for Updates 📩</h3>
+            <div class="sub-form">
+                <input type="email" class="sub-input" placeholder="Enter your email...">
+                <button class="sub-btn">Subscribe</button>
+            </div>
+        </div>
+        <div class="footer-brand">
+            Made with <span>❤️</span> by <b>RAJ TEC LTD</b>
+        </div>
+    </footer>
 
     <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
     <div class="bottom-sheet" id="yearSheet">
@@ -242,9 +319,93 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
     <script>
+        // --- 1. FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbwbrE_jRfdGlloBkHEgLHdEnSiv_3th8",
+            authDomain: "ieduy-2b38b.firebaseapp.com",
+            projectId: "ieduy-2b38b",
+            storageBucket: "ieduy-2b38b.firebasestorage.app",
+            messagingSenderId: "133544253650",
+            appId: "1:133544253650:web:76e33615d67200b175750b",
+            measurementId: "G-N8N99CS619"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+        const analytics = firebase.analytics();
+
+        // --- 2. YOUR VAPID KEY ---
+        const vapidKey = "BOIG2qa4UVVkLrBA0z7POi0rxO_-B0QleqcBDO4N3TqC9sjwJRLob_AzOpTLsT1ehDPL0xelkIaz0QjY_DjN1mY";
+
         let selectedStream = '';
 
+        // --- NOTIFICATION LOGIC ---
+        window.onload = function() {
+            // Check current permission. If it's NOT 'granted' (meaning 'denied' or 'default'), show the modal.
+            if (Notification.permission !== "granted") {
+                document.getElementById('notifModal').classList.add('show');
+            }
+        };
+
+        function allowNotifications() {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    messaging.getToken({ vapidKey: vapidKey }).then((currentToken) => {
+                        if (currentToken) {
+                            console.log('User Token:', currentToken);
+                            alert("Success! You are subscribed to updates.");
+                            document.getElementById('notifModal').classList.remove('show');
+                        } else {
+                            console.log('No registration token available.');
+                        }
+                    }).catch((err) => {
+                        console.log('An error occurred while retrieving token. ', err);
+                    });
+                } else {
+                    alert("Notifications are blocked by your browser settings. Please unblock them in browser settings to receive updates.");
+                }
+            });
+        }
+
+        function denyNotifications() {
+            // Just hide the modal for this session. 
+            // Because we DON'T set any localStorage flag, window.onload will trigger the modal again on refresh.
+            document.getElementById('notifModal').classList.remove('show');
+        }
+
+        // --- LISTEN FOR FOREGROUND MESSAGES ---
+        messaging.onMessage((payload) => {
+            console.log('Message received. ', payload);
+            alert(`📢 ${payload.notification.title}\n\n${payload.notification.body}`);
+        });
+
+        // --- TOUCH RIPPLE EFFECT ---
+        document.addEventListener('click', function (e) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const size = 20; // Initial size
+            ripple.style.width = ripple.style.height = `${size}px`;
+            
+            // Center the ripple on the click
+            ripple.style.left = `${e.pageX - size/2}px`;
+            ripple.style.top = `${e.pageY - size/2}px`;
+            
+            document.body.appendChild(ripple);
+            
+            // Remove element after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+        // --- MENU LOGIC ---
         function toggleMenu() {
             document.querySelector('.hamburger').classList.toggle('active');
             document.querySelector('.menu-box').classList.toggle('open');
@@ -259,6 +420,7 @@
             }
         });
 
+        // --- SHEET LOGIC ---
         function openSheet(stream) {
             selectedStream = stream;
             document.getElementById('sheetOverlay').classList.add('active');
